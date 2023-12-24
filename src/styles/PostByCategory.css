@@ -1,0 +1,56 @@
+:root {
+    --dark-color: #333;
+    --light-color: #FFFFFF;
+    --secondary-color: #1E2834;
+    font-family: 'Inter', sans-serif;
+    font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
+}
+
+/* Post Category Section */
+.title-category-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 1);
+    padding: 20px;
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+    height: 50vh;
+}
+
+.title-category-container {
+    margin-top: 20px;
+    padding: 20px 255px;
+    gap: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.title-category-class {
+    font-family: 'Graphik', sans-serif;
+    font-size: 76px;
+    font-weight: 700;
+    line-height: 91px;
+    letter-spacing: -0.03em;
+    text-align: center;
+    background: linear-gradient(97.1deg, #C41740 0%, #EA9C28 100%);
+    -webkit-background-clip: text; /* Apply gradient only to the text (for older browsers) */
+    background-clip: text; /* Apply gradient only to the text */
+    color: transparent;
+    margin-bottom: 0px;
+}
+
+.title-category-section .title-category-container p {
+    font-family: 'Graphik', sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 42px;
+    letter-spacing: 0em;
+    text-align: center;
+    color: #475467;
+    padding: 10px;
+}

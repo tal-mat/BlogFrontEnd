@@ -1,0 +1,60 @@
+:root {
+    --dark-color: #333;
+    --light-color: #FFFFFF;
+    --secondary-color: #1E2834;
+    font-family: 'Inter', sans-serif;
+    font-feature-settings: 'liga' 1, 'calt' 1; /* fix for Chrome */
+}
+
+/* Home Header */
+.home-section section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 1);
+    padding: 20px;
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+    height: 60vh;
+}
+
+.home-container {
+    margin-top: 50px;
+    padding: 50px 255px 50px 255px;
+    gap: 10px;
+    text-align: center;
+}
+
+.home-container span {
+    width: 159px;
+    height: 40px;
+    padding: 10px 16px;
+    border-radius: 100px;
+    gap: 10px;
+    background: #F2F4F7;
+}
+
+.home-container .header-class {
+    font-family: 'Graphik', sans-serif;
+    font-size: 76px;
+    font-weight: 700;
+    line-height: 91px;
+    letter-spacing: -0.03em;
+    text-align: center;
+    background: linear-gradient(97.1deg, #C41740 0%, #EA9C28 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+
+.home-section .home-container p {
+    font-family: 'Graphik', sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 42px;
+    letter-spacing: 0em;
+    text-align: center;
+    color: #475467;
+    padding: 10px;
+}
