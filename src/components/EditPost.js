@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { PostsContext } from '../providers/posts-providers';
 import { AuthContext } from '../providers/auth-provider';
-import '../styles/Admin.css';
+import '../styles/AdminControlPanel.css';
 
 // This func will display a form to edit exiting post
 export function EditPostForm({ postId }) {

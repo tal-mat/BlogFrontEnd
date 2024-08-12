@@ -1,0 +1,94 @@
+:root {
+    --dark-color: #333;
+    --light-color: #FFFFFF;
+    --secondary-color: rgba(228, 231, 236, 1);
+    font-family: 'Inter', sans-serif;
+    font-feature-settings: 'liga' 1, 'calt' 1;
+}
+
+@font-face {
+    font-family: 'Graphik';
+    src: url('../fonts/GraphikRegular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.user-management-container {
+    max-width: 10000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.user-management-container h1 {
+    color: var(--dark-color);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    margin: 0 auto; /* Center the wrapper horizontally */
+}
+
+.user-management-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.user-management-table th,
+.user-management-table td {
+    padding: 15px;
+    border: 1px solid var(--dark-color);
+    text-align: left;
+}
+
+.user-management-table th {
+    background-color: var(--secondary-color);
+    color: var(--dark-color);
+    font-weight: bold;
+}
+
+.user-management-table tbody tr:nth-child(even) {
+    background-color: var(--light-color);
+}
+
+.user-management-table tbody tr:hover {
+    background-color: var(--secondary-color);
+}
+
+.user-management-table td {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-management-table thead {
+    background-color: var(--dark-color);
+    color: #fff;
+}
+
+.user-management-table tbody {
+    background-color: var(--light-color);
+}
+
+.user-management-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.deleteBtn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.editBtn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    margin-left: 5px;
+}

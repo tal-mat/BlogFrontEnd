@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
 import personallyLogo from '../images/personally-logo.svg';
-import { Link, Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { HashLink } from 'react-router-hash-link';
 import '../styles/Header.css';
 import { AuthContext } from "../providers/auth-provider";
+
 
 const Header = () => {
   const authContext = useContext(AuthContext);
@@ -13,24 +14,59 @@ const Header = () => {
 
   const [userGreeting, setUserGreeting] = useState(null);
   const [loginBtnText, setLoginBtnText] = useState("Log In");
+  const [isAdmin, setIsAdmin] = useState(false);
+
 
   useEffect(() => {
+    updateGreetingAndButtonText(user);
+    fetchAdminStatus();
+  }, [user])
+
+
+  const updateGreetingAndButtonText = (user) => {
     if (user) {
-      setUserGreeting(`Hello ${user.userName}`);
+      setUserGreeting(`Hello ${user.firstName}`);
       setLoginBtnText("Log Out");
     } else {
       setUserGreeting(null);
       setLoginBtnText("Log In");
     }
-  }, [user]);
+  };
+  const fetchAdminStatus = () => {
+    fetch('http://127.0.0.1:4000/admin', {
+      method: 'GET',
+      credentials: 'include'
+    })
+        .then(response => {
+          if (response.ok) {
+            setIsAdmin(true);
+          } else {
+            setIsAdmin(false);
+          }
+            updateGreetingAndButtonText(user);
+        })
+        .catch(error => {
+          console.error('Error fetching admin status:', error);
+        });
+  };
 
-  const handleLoginClick = () => {
-    if (user) {
+
+    const handleLoginClick = () => {
+      console.log("handleLoginClick: ", user);
+      if (user) {
       // User is already logged in, so log them out
       signOut();
     } else {
       // User is not logged in, initiate the login process
-      signIn();
+        signIn()
+            .then(() => {
+              // Handle successful sign-in
+              console.log("User signed in successfully");
+            })
+            .catch((error) => {
+              // Handle sign-in error
+              console.error("Error signing in:", error);
+            });
     }
   };
 
@@ -52,7 +88,7 @@ const Header = () => {
             <li className="li-nav">
               <Link to="/contact" className="link-nav">Contact</Link>
             </li>
-            {user && user.userName && (
+            {isAdmin && (
                 <li className="li-nav">
                   <Link to="/admin" className="link-nav">Admin</Link>
                 </li>

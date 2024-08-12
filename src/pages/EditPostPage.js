@@ -2,6 +2,8 @@ import React, { useContext } from 'react';
 import { AuthContext } from '../providers/auth-provider';
 import { useParams } from 'react-router-dom';
 import EditPost from '../components/EditPost';
+import Admin from "../functions/Admin";
+
 
 export default function EditPostPage() {
     const { user } = useContext(AuthContext);

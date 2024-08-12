@@ -18,8 +18,8 @@ export default function Posts() {
     // The posts are shown up like the figma, seperated to categories
     return (
         <div className="postsPage-cards-container">
-            <Link to="/filterbytitle" className="searchBtn" onClick={handleSearchBtn}>
-                <span>🔍Filter by title</span>
+            <Link to="/searchposts" className="searchBtn" onClick={handleSearchBtn}>
+                <span>🔍Search Posts</span>
             </Link>
             <PostList category="Daily_Digest" />
             <PostList category="Design_Tools" />

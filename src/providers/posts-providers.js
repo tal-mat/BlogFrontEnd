@@ -1,152 +1,218 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState, useContext  } from "react";
+import { AuthContext } from '../providers/auth-provider';
 
-// Context creation for Posts
+
 export const PostsContext = createContext(null);
 
 export function PostsProvider({ children }) {
-    let [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const { user } = useContext(AuthContext);
 
-    // Gets random details to the posts in addition to when given in the fetch
-    function getRandomCategoryForPost() {
-        const categories = ['Daily_Digest', 'Design_Tools', 'Tutorials'];
-        const randomIndex = Math.floor(Math.random() * categories.length);
-        return categories[randomIndex];
+
+  const fetchPosts = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:4000/posts');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const posts = await response.json();
+
+      if (Array.isArray(posts)) {
+        setPosts(posts);
+      } else {
+        console.error('Received data is not an array of posts:', posts);
+      }
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
     }
+  };
 
-    function getRandomDate() {
-        const startDate = new Date('2023-01-01');
-        const currentDate = new Date();
-        const randomMilliseconds = Math.floor(Math.random() * (currentDate - startDate + 1));
-        const randomDate = new Date(startDate.getTime() + randomMilliseconds);
-        return randomDate;
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+
+
+  const addPost = async (post) => {
+    try {
+      let newPost = {
+        "category": post.category,
+        "title": post.title,
+        "description": post.description,
+        "imageUrl": post.imageUrl,
+        "date": post.date,
+        "postedBy": user.userId
+      };
+
+      const response = await fetch('http://127.0.0.1:4000/posts', {
+        method: "POST",
+        body: JSON.stringify(newPost),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      alert("post created");
+      fetchPosts();
+
+    } catch (error) {
+      console.error('There was a problem adding the post:', error);
     }
+  };
 
-    const fetchPosts = () => {
-        // Using local storage for the posts from the fetch
-        const storedPosts = JSON.parse(localStorage.getItem("posts")) || [];
 
-        // If the local storage is empty, then do fetch to the details for the posts
-        if (storedPosts.length > 0) {
-            setPosts(storedPosts);
-        } else {
-            fetch('https://jsonplaceholder.typicode.com/posts')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(json => {
-                    const postsWithCategories = json.map(post => {
-                        const randomDate = getRandomDate();
-                        const formatter = new Intl.DateTimeFormat('en', {
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric',
-                        });
-                        const formattedDate = formatter.format(randomDate);
+  const removePost = async (post) => {
+    try {
+      // Optimistic UI update
+      setPosts(prevPosts => prevPosts.filter(item => item.id !== post.id));
 
-                        return {
-                            id: post.id,
-                            title: post.title,
-                            description: post.body,
-                            date: formattedDate,
-                            category: getRandomCategoryForPost(),
-                            imageUrl: `https://picsum.photos/id/${post.id}/250/300`,
-                        };
-                    });
+      const response = await fetch(`http://127.0.0.1:4000/posts/${post.id}`, {
+        method: 'DELETE',
+      });
 
-                    setPosts(postsWithCategories);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
 
-                    // Save fetched posts to local storage
-                    localStorage.setItem("posts", JSON.stringify(postsWithCategories));
-                })
-                .catch(error => {
-                    console.error('Error fetching posts:', error);
-                });
-        }
-    };
-
-    useEffect(() => {
-        fetchPosts();
-    }, []);
-
-    useEffect(() => {
-        // Save posts to local storage whenever posts are updated
-        localStorage.setItem("posts", JSON.stringify(posts));
-    }, [posts]);
-
-    const addPost = (post) => {
-        setPosts(prevPosts => {
-            const updatedPosts = [...prevPosts, post];
-            localStorage.setItem("posts", JSON.stringify(updatedPosts));
-            return updatedPosts;
-        });
-    };
-
-    const removePost = (post) => {
-        setPosts(prevPosts => {
-            const updatedPosts = prevPosts.filter(item => item.id !== post.id);
-            localStorage.setItem("posts", JSON.stringify(updatedPosts));
-            return updatedPosts;
-        });
-    };
-
-    const clearPost = () => {
-        setPosts([]);
-    };
-
-    const updatePost = (updatedPost) => {
-        removePost(updatedPost);
-        addPost(updatedPost);
-    };
-
-    const filterPostsByCategory = (category) => {
-        return posts.filter(post => post.category === category);
-    };
-
-    const getAmountOfFilterPostsByCategory = (category) => {
-        return posts.filter(post => post.category === category).length;
-    };
-
-    const setNewPostId = () => parseInt(posts.length + 1, 10);
-
-    const getLastThreePostsByCategory = category => {
-        const sortedPosts = posts
-            .filter(post => post.category === category)
-            .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        return sortedPosts.slice(0, 3);
-    };
-
-    const getPostById = currentPostId => {
-        return posts.find(post => post.id === currentPostId);
+    } catch (error) {
+      console.error('There was a problem removing the post:', error);
+      fetchPosts(); // Refetch posts to synchronize with the server
     }
+  };
 
-    const getPostByTitle = title => {
-        return posts.filter(post => post.title.includes(title));
+  const clearPost = async () => {
+    try {
+      setPosts([]);
+    } catch (error) {
+      console.error('There was a problem clearing posts:', error);
     }
+  };
 
-    const value = {
-        posts,
-        fetchPosts,
-        addPost,
-        removePost,
-        clearPost,
-        filterPostsByCategory,
-        getLastThreePostsByCategory,
-        getAmountOfFilterPostsByCategory,
-        setNewPostId,
-        getPostById,
-        getPostByTitle,
-        updatePost
-    };
+  const updatePost = async  (updatedPost) => {
+    try {
 
-    return (
-        <PostsContext.Provider value={value}>
-            {children}
-        </PostsContext.Provider>
-    );
+      // Optimistic UI update
+      setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+              post.id === updatedPost.id ? { ...post, ...updatedPost } : post
+          )
+      );
+
+      // Actual PUT request for updating the post
+      const response = await fetch(`http://127.0.0.1:4000/posts/${updatedPost.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(updatedPost),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+    } catch (error) {
+      // Revert the optimistic UI update on error
+      console.error('There was a problem updating the post:', error);
+      fetchPosts(); // Refetch posts to synchronize with the server
+    }
+  };
+
+  const filterPostsByCategory = (category) => {
+    return posts.filter(post => post.category === category);
+  };
+
+  const getAmountOfFilterPostsByCategory = (category) => {
+    return posts.filter(post => post.category === category).length;
+  };
+
+  const setNewPostId = () => parseInt(posts.length + 1, 10);
+
+  const getLastThreePostsByCategory = category => {
+    const sortedPosts = posts
+      .filter(post => post.category === category)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    return sortedPosts.slice(0, 3);
+  };
+
+  const getPostById = currentPostId => {
+    return posts.find(post => post.id === currentPostId);
+  }
+
+  const getPostByTitle = title => {
+    return posts.filter(post => post.title.includes(title));
+  }
+
+  const searchPosts = async (from, to, filterText, lastName) => {
+    try {
+      const url = 'http://127.0.0.1:4000/posts';
+      const requestBody = {
+        ...(from !== undefined && { from }),
+        ...(to !== undefined && { to }),
+        ...(filterText !== null && { filterText }),
+        ...(lastName !== null && { lastName }),
+      };
+
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+
+      const queryParams = new URLSearchParams(requestBody);
+      const fullUrl = `${url}?${queryParams.toString()}`;
+
+      console.log('Full Request URL:', fullUrl);
+
+      const response = await fetch(fullUrl, options);
+
+      console.log('Response Status:', response.status);
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const foundPosts = await response.json();
+      console.log('Found Posts:', foundPosts);
+
+      if (Array.isArray(foundPosts)) {
+        return foundPosts;
+      } else {
+        console.error('Received data is not an array of posts:', foundPosts);
+      }
+    } catch (error) {
+      console.error('There was a problem with the fetch operation of searching posts:', error);
+    }
+  };
+
+  const value = {
+    posts,
+    setPosts,
+    fetchPosts,
+    addPost,
+    removePost,
+    clearPost,
+    filterPostsByCategory,
+    getLastThreePostsByCategory,
+    getAmountOfFilterPostsByCategory,
+    setNewPostId,
+    getPostById,
+    getPostByTitle,
+    updatePost,
+    searchPosts
+  };
+
+  return (
+    <PostsContext.Provider value={value}>
+      {children}
+    </PostsContext.Provider>
+  );
 }
 
 export default PostsProvider;
